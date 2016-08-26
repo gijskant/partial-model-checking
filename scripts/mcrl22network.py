@@ -125,9 +125,9 @@ class Mcrl22Network:
     if len(p) > 1:
       p[0] = p[0].strip()
       if not p[1][-1:] == ')':
-        print "error: not in correct form:", p[0]
+        print >> sys.stderr, "Error: not in correct form:", p[0]
       if p[0] in invalid_statements:
-        print "statement", p[0], "not allowed here."
+        print >> sys.stderr, "Statement", p[0], "not allowed here."
       elif p[0] == 'hide':
         self.process_hide(p[1][:-1])
       elif p[0] == 'allow':
@@ -147,14 +147,14 @@ class Mcrl22Network:
         if not proc == "":
           self.processes.append(proc)
           proc_name = self.get_proc_name(proc)
-      print "Processes:", self.processes
+      print >> sys.stderr, "Processes:", self.processes
 
 
   def process_init_decl(self):
     # print "init:", self.init_decl
     i = self.init_decl.strip()
     if not i[-1:] == ';':
-      print "error: not in correct form. ';' expected."
+      print >> sys.stderr, "Error: not in correct form. ';' expected."
     i = i[:-1]
     self.process_init(i, [])
 
@@ -185,7 +185,7 @@ class Mcrl22Network:
           assert(proc_params[-1:]==")")
           proc_params = proc_params[:-1]
         proc_body = proc_eq[1]
-        print "proc:", proc_name
+        print >> sys.stderr, "proc:", proc_name
         # print "params:", proc_params 
         # print "body:", proc_body
         splitters = ['.','+','(',')','->','<>']
@@ -207,8 +207,8 @@ class Mcrl22Network:
         proc_refs = x & self.proc_names
         self.proc_refs[proc_name] = proc_refs
         # print "intersection:", x
-        print "proc", proc_name, "has action labels:", proc_actions
-        print "proc", proc_name, "refers to:", proc_refs
+        print >> sys.stderr, "proc", proc_name, "has action labels:", proc_actions
+        print >> sys.stderr, "proc", proc_name, "refers to:", proc_refs
     
     # fixpoint computation for action label propagation
     # print "Propagating action labels"
@@ -245,7 +245,7 @@ class Mcrl22Network:
     self.proc_decl = ""
       
   def parse_mcrl2(self, filename):
-    print "Parsing file:", filename
+    print >> sys.stderr, "Parsing file:", filename
     self.init_parser()
     types = []
     hide = []
@@ -317,14 +317,14 @@ class Mcrl22Network:
     return filename
 
   def generate_vector(self):
-    print "Computing synchronization vector..."
+    print >> sys.stderr, "Computing synchronization vector..."
     vector_elements = []
     procs = list(self.processes)
     n = len(procs)
     i = 1
     # Compute local actions
     for proc in self.processes:
-      #print "Generate local actions for proc", proc
+      print >> sys.stderr, "Generate local actions for proc", proc
       for a in (self.proc_actions[self.get_proc_name(proc)] & self.allow):
         e = {proc: a}
         if a in self.hide:
@@ -400,34 +400,34 @@ class Mcrl22Network:
           pf.write(l)
         i = i + 1
       if i < self.init_line:
-        print "Warning: not all", self.init_line, "line read."
+        print >> sys.stderr, "Warning: not all", self.init_line, "line read."
     for proc in procs:
       pf = files[proc]
       pf.write("init "+proc+";\n")
       pf.close()
-      print "Process written to:", self.get_proc_filename(proc)+".mcrl2"
-    print "Linearising processes..."
+      print >> sys.stderr, "Process written to:", self.get_proc_filename(proc)+".mcrl2"
+    print >> sys.stderr, "Linearising processes..."
     res = 0
     for proc in procs:
       # Linearise processes
       cmd = 'mcrl22lps -v '+lin_options+' ' + \
           self.get_proc_filename(proc)+'.mcrl2 ' + \
           self.get_proc_filename(proc)+'.lps'
-      print cmd
+      print >> sys.stderr, cmd
       res = os.system(cmd)
       if not res==0:
         break
       cmd = 'lpsconstelm -v ' + \
           self.get_proc_filename(proc)+'.lps ' + \
           self.get_proc_filename(proc)+'.lps'
-      print cmd
+      print >> sys.stderr, cmd
       res = os.system(cmd)
       if not res==0:
         break
       cmd = 'lpsrewr -v ' + \
           self.get_proc_filename(proc)+'.lps ' + \
           self.get_proc_filename(proc)+'.lps'
-      print cmd
+      print >> sys.stderr, cmd
       res = os.system(cmd)
       if not res==0:
         break
@@ -453,7 +453,7 @@ if __name__ == '__main__':
       lin_options = sys.argv[2]
     else:
       lin_options = "-f -lregular2"
-    print "Linearisation options:", lin_options
+    print >> sys.stderr, "Linearisation options:", lin_options
     parser = Mcrl22Network(lin_options)
     # parse mcrl2 file
     parser.parse_mcrl2(filename)
@@ -466,4 +466,10 @@ if __name__ == '__main__':
     f = open(network_filename, 'w')
     parser.write_network(f)
     f.close()
-    print "Network written to:", network_filename
+    print >> sys.stderr, "Network written to:", network_filename
+  else:
+    print >> sys.stderr, ("Usage: %s <file.mcrl2> [linearisation options]"
+        % os.path.basename(sys.argv[0]))
+    print >> sys.stderr, ""
+    print >> sys.stderr, "Generates a network file <file.net> and required .mcrl2 and .lps filed."
+    print >> sys.stderr, "Default linearisation options: -f -lregular2"
