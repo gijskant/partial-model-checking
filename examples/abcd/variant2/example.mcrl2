@@ -1,0 +1,13 @@
+act a,b,b_,_b,c,c_,_c,d,d_,_d;
+
+proc A = a.a.a.b_.A;
+proc B = _b.B' + c.B;
+proc B' = _b.B';
+proc C = a._c.d_.C;
+proc D = _d.a.D;
+
+init allow({a,b,c,d}, 
+     	comm({_b|b_->b, c_|_c->c, d_|_d->d},
+		B || C || A || D
+	)
+     );
