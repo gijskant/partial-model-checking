@@ -28,8 +28,8 @@ formulaquotient -n ${network.net} -o ${output-network.net} ${formula.mcf} ${outp
 
 ## Script for creating a network file
 ```bash
-# creates a network <model>.net
-./scripts/mcrl22network.py ${model.mcrl2}
+# creates a network ${example}.net
+./scripts/mcrl22network.py ${example}.mcrl2
 ```
 The scripts call the tool `memtime` for time measurement. See below for instructions on how to get it. N.B.: `mcrl22network` requires the `mcrl2` specification to be in a specific form:
 
@@ -74,13 +74,13 @@ synchronization_vector
   (d, e, c: Nat)
 }
 ```
-Formula `formula.mcl`:
+Formula `formula.mcf`:
 ```
 nu X. exists j: Nat . <c(j)>X
 ```
 Executing the tool:
 ```
-> formulaquotient --network=example.net -o q_example.net formula.mcl q_formula.mcl
+> formulaquotient --network=example.net -o q_example.net formula.mcf q_formula.mcf
 > cat q_formula.mcl
 nu X(n: Nat = 1). exists j: Nat. val(n == j) && <c1(n)>X(n)
 > cat q_example.net
@@ -97,7 +97,7 @@ synchronization_vector
 ```
 Iteratively:
 ```bash
-formulaquotient -v -I --network=example.net formula.mcl output.pbes
+formulaquotient -v -I --network=example.net formula.mcf output.pbes
 pbessolve -v output.pbes
 ```
 Repeatedly applies quotienting until a PBES remains. 
@@ -116,7 +116,7 @@ Option | Description
 
 Preferred combination of options:
 ```bash
-formulaquotient -v -MISP -FNA --network=example.net formula.mcl output.pbes
+formulaquotient -v -MISP -FNA --network=example.net formula.mcf output.pbes
 pbessolve -v output.pbes
 ```
 
@@ -135,7 +135,7 @@ network2lts ${network.net} -odot ${lts.dot}
 ### memtime
 We use memtime for measuring time and memory usage:
 ```bash
-git clone http://fmt.cs.utwente.nl/tools/scm/memtime.git
+git clone http://fmttools.cs.utwente.nl/tools/scm/memtime.git
 cd memtime
 git submodule update --init
 ./memtimereconf
