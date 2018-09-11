@@ -1,0 +1,126 @@
+--- peterson.mcrl2.orig	2018-09-10 16:38:24.616396870 +0200
++++ peterson.mcrl2	2018-09-10 16:48:22.524080870 +0200
+@@ -21,13 +21,23 @@
+ map version: Nat;
+ eqn version = 3;
+ 
++act b1rf,b1rf0,b1rf00,b1rt,b1rt0,b1rt00,b1wf,b1wf0,b1wf00,b1wt,b1wt0,b1wt00;
++    b2rf,b2rf0,b2rf00,b2rt,b2rt0,b2rt00,b2wf,b2wf0,b2wf00,b2wt,b2wt0,b2wt00;
++    kr1,kr10,kr100,kr2,kr20,kr200,kw1,kw10,kw100,kw2,kw20,kw200;
++    req1,req2,exit1,exit2,enter1,enter2;
++    % probes
++    b11, b12, b21, b22, k1, k2;
++    b11w,b21r,b12r,b22w;
++    % internal actions
++    internal;
++
+ proc P1 =
+   ((version == 1) -> (req1 . b1wt . kw2 . P11
+-                   + tau . P1))
++                   + internal . P1))
+ + ((version == 2) -> (req1 . b1wt . b11 . kw2 . k1 . P11
+-                   + tau . P1))
++                   + internal . P1))
+ + ((version == 3) -> (req1 . b1wt . b11w . kw2 . k1 . P11
+-                   + tau . P1));
++                   + internal . P1));
+         
+ proc P11 = 
+   ((version == 1) -> (b2rf . P12
+@@ -47,11 +57,11 @@
+ 
+ proc P2 = 
+    ((version == 1) -> (req2 . b2wt . kw1 . P21
+-                    + tau . P2))
++                    + internal . P2))
+  + ((version == 2) -> (req2 . b2wt . b22 . kw1 . k2 . P21
+-                    + tau . P2))
++                    + internal . P2))
+  + ((version == 3) -> (req2 . b2wt . b22w . kw1 . k2 . P21
+-                    + tau . P2));
++                    + internal . P2));
+         
+ proc P21 = 
+    ((version == 1) -> (b1rf . P22
+@@ -74,51 +84,44 @@
+ % that can be written or read.
+ % The action b1rf, e.g., denotes reading value false of B1, b1wt means
+ % setting B1 to true.
+-proc B1f = b1rf'.B1f
+-         + b1wf'.B1f
+-         + b1wt'.B1f;
++proc B1f = b1rf0.B1f
++         + b1wf0.B1f
++         + b1wt0.B1f;
+     
+-proc B1t = b1rt'.B1t
+-         + b1wt'.B1t
+-         + b1wf'.B1f;
++proc B1t = b1rt0.B1t
++         + b1wt0.B1t
++         + b1wf0.B1f;
+     
+-proc B2f = b2rf'.B2f
+-         + b2wf'.B2f
+-         + b2wt'.B2t;
++proc B2f = b2rf0.B2f
++         + b2wf0.B2f
++         + b2wt0.B2t;
+     
+-proc B2t = b2rt'.B2t
+-         + b2wt'.B2t
+-         + b2wf'.B2f;
++proc B2t = b2rt0.B2t
++         + b2wt0.B2t
++         + b2wf0.B2f;
+  
+ % Both processes read and write to variable k, that can contain values
+ % 1 or 2, and is represented by the process Ki below.
+-proc K1 = kr1' . K1
+-        + kw1' . K1
+-        + kw2' . K2;
+-   
+-proc K2 = kr2' . K2
+-        + kw2' . K2
+-        + kw1' . K1;
+-
+-act b1rf,b1rf',b1rf'',b1rt,b1rt',b1rt'',b1wf,b1wf',b1wf'',b1wt,b1wt',b1wt'';
+-    b2rf,b2rf',b2rf'',b2rt,b2rt',b2rt'',b2wf,b2wf',b2wf'',b2wt,b2wt',b2wt'';
+-    kr1,kr1',kr1'',kr2,kr2',kr2'',kw1,kw1',kw1'',kw2,kw2',kw2'';
+-    req1,req2,exit1,exit2,enter1,enter2;
+-    % probes
+-    b11, b12, b21, b22, k1, k2;
+-    b11w,b21r,b12r,b22w;
++proc K1 = kr10 . K1
++        + kw10 . K1
++        + kw20 . K2;
+    
+-proc Peterson = hide( {b1rf'',b1wf'',b1wt'',b1rt'',b2rf'',b2wf'',b2rt'',b2wt'',kr1'',
+-                        kr2'',kw1'',kw2''},
+-                allow({b1rf'',b1wf'',b1wt'',b1rt'',b2rf'',b2wf'',b2rt'',b2wt'',kr1'',
+-                        kr2'',kw1'',kw2'',
++proc K2 = kr20 . K2
++        + kw20 . K2
++        + kw10 . K1;
++
++init hide( {internal,b1rf00,b1wf00,b1wt00,b1rt00,b2rf00,b2wf00,b2rt00,b2wt00,kr100,
++                        kr200,kw100,kw200},
++                allow({internal,b1rf00,b1wf00,b1wt00,b1rt00,b2rf00,b2wf00,b2rt00,b2wt00,kr100,
++                        kr200,kw100,kw200,
+                         enter1,exit1,enter2,exit2,req1,req2,
+-%                        b11, b12, b21, b22,
++                        b11, b12, b21, b22,
+                         k1, k2,
+                         b11w,b21r,b12r,b22w},
+-                comm({b1rf|b1rf'->b1rf'',b1rt|b1rt'->b1rt'',b1wf|b1wf'->b1wf'',b1wt|b1wt'->b1wt'',
+-                      b2rf|b2rf'->b2rf'',b2rt|b2rt'->b2rt'',b2wf|b2wf'->b2wf'',b2wt|b2wt'->b2wt'',
+-                      kr1|kr1'->kr1'', kr2|kr2'->kr2'', kw1|kw1'->kw1'', kw2|kw2'->kw2''}
+-                     , (P1 || P2 || K1 || B1f || B2f))));
++                comm({b1rf|b1rf0->b1rf00,b1rt|b1rt0->b1rt00,b1wf|b1wf0->b1wf00,b1wt|b1wt0->b1wt00,
++                      b2rf|b2rf0->b2rf00,b2rt|b2rt0->b2rt00,b2wf|b2wf0->b2wf00,b2wt|b2wt0->b2wt00,
++                      kr1|kr10->kr100, kr2|kr20->kr200, kw1|kw10->kw100, kw2|kw20->kw200}
++                     ,
++                     P1 || P2 || K1 || B1f || B2f
++                     )));
+ 
+-init Peterson;                     

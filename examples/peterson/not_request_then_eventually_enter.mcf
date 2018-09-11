@@ -1,0 +1,9 @@
+% Negation of the property in
+% https://github.com/jkeiren/paritygame-generator/blob/master/cases/modelchecking/properties/peterson/request_then_eventually_enter_p1.mcf
+%
+% If a process wishes to enter the critical section, then it
+% may never do so.
+%
+% The original property does not hold, hence this negated property holds.
+
+mu Z.(<true>Z || <req1>(nu X. (<true>X && [enter1]false)) )
