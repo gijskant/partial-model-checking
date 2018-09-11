@@ -21,11 +21,11 @@ pbespp example.reach.pbes example.reach.pp
 
 ## Quotienting Y
 
-formulaquotient -v -IPS -nexampleXY.net ../reach.mcf example.reachY.pbes
+formulaquotient -v -IPS -n exampleXY.net ../reach.mcf example.reachY.pbes
 pbespp example.reachY.pbes example.reachY.pp
 
 ## Quotienting X
 
 mcrl22network.py ../exampleYX.mcrl2
-formulaquotient -v -IPS -nexampleYX.net ../reach.mcf example.reachX.pbes
+formulaquotient -v -IPS -n exampleYX.net ../reach.mcf example.reachX.pbes
 pbespp example.reachX.pbes example.reachX.pp

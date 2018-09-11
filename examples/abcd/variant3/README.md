@@ -5,15 +5,15 @@
 ```bash
 mkdir data
 cd data
-../../../../scripts/mcrl22network.py ../example.mcrl2
+../../../../scripts/mcrl22network.py ../YXexample.mcrl2
 ```
 
 ## Run
 
 ```bash
 # Quotienting without approximation on intermediate formulae
-formulaquotient -v -IPS -nexample.net ../reach.mcf example.reach.pbes
+formulaquotient -v -IPS -n YXexample.net ../reach.mcf YXexample.reach.pbes
 
 # Quotienting with approximation on intermediate formulae
-formulaquotient -v -IPSFN -nexample.net ../reach.mcf example.reach.pbes
+formulaquotient -v -IPSFNA -n YXexample.net ../reach.mcf YXexample.reach.pbes
 ```
