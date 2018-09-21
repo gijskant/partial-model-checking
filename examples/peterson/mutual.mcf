@@ -1,0 +1,1 @@
+[ true*. ENTER(1) . (!LEAVE(1))* . ENTER(2)] false

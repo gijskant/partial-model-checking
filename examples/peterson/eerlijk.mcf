@@ -1,0 +1,1 @@
+[true*. TRY(1) . (!ENTER(1))* . TRY(2)] nu Z . <(!ENTER(2))* . ENTER(1)>Z

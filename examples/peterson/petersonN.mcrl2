@@ -1,0 +1,60 @@
+map N:Pos;
+eqn N=3;
+
+act TRY, ENTER, LEAVE: Pos;
+    setLevelReq,setLevelRes,setLevel,getLevelReq,getLevelRes,getLevel: Pos#Nat;
+    setLastReq,setLastRes,setLast,getLastReq,getLastRes,getLast: Pos#Pos;
+    exists_otherReq,exists_otherRes,exists_other: Pos#Nat#Bool;
+    
+% 0: not set
+% 1..N: 
+proc
+Levels(l1,l2,l3:Nat) =
+  sum l:Nat . (l<=N) -> setLevelRes(1,l) . Levels(l1=l)
++ sum l:Nat . (l<=N) -> setLevelRes(2,l) . Levels(l2=l)
++ sum l:Nat . (l<=N) -> setLevelRes(3,l) . Levels(l3=l)
++ getLevelRes(1,l1) . Levels()
++ getLevelRes(2,l2) . Levels()
++ getLevelRes(3,l3) . Levels()
++ sum l:Nat . (l<=N) -> exists_otherRes(1,l,l2>=l || l3>=l). Levels()
++ sum l:Nat . (l<=N) -> exists_otherRes(2,l,l1>=l || l3>=l). Levels()
++ sum l:Nat . (l<=N) -> exists_otherRes(3,l,l1>=l || l2>=l). Levels()
+;
+
+Last(l1,l2,l3:Pos) =
+  sum l:Pos . (l<=N) -> setLastRes(1,l) . Last(l1=l)
++ sum l:Pos . (l<=N) -> setLastRes(2,l) . Last(l2=l)
++ sum l:Pos . (l<=N) -> setLastRes(3,l) . Last(l3=l)
++ getLastRes(1,l1) . Last()
++ getLastRes(2,l2) . Last()
++ getLastRes(3,l3) . Last()
+;
+
+ProcLoop(i,l:Pos) =
+     (l==N+1) -> (ENTER(i) . LEAVE(i) . setLevelReq(i,0) . Peterson(i))
+     <>
+     setLevelReq(i,l).
+     ((l==1)->TRY(i).setLastReq(l,i)
+     <> setLastReq(l,i)).
+     ProcWait(i,l);
+
+     ProcWait(i,l:Pos) =
+     sum i0:Pos . (i0<=N) -> getLastReq(l,i0) .
+        ((i0!=i) -> ProcLoop(i,l+1)
+     <> (exists_otherReq(i,l,false) . ProcLoop(i,l+1)
+       + exists_otherReq(i,l,true) . ProcWait(i,l)
+        ));
+
+proc Peterson(i:Pos) = ProcLoop(i,1) ;
+
+init hide({setLevel,setLast,exists_other,getLast,getLevel},
+     allow({setLevel,setLast,exists_other,getLast,getLevel,LEAVE,ENTER,TRY},
+     comm({setLevelReq|setLevelRes->setLevel,
+	   getLevelReq|getLevelRes->getLevel,
+	   setLastReq|setLastRes->setLast,
+	   getLastReq|getLastRes->getLast,
+	   exists_otherReq|exists_otherRes -> exists_other},
+     Levels(0,0,0) || Last(1,1,1) || Peterson(1) || Peterson(2) || Peterson(3)
+     )));
+
+% init ProcLoop(1,1);
