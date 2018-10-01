@@ -424,6 +424,7 @@ class Mcrl22Network:
         self.lin_method = lin_method
 
     def write_network(self, f):
+        Console.info("Writing network for processes: %s" % self.processes)
         f.write('length\n')
         f.write(str(len(self.processes)))
         f.write('\n')
@@ -435,7 +436,7 @@ class Mcrl22Network:
         f.write('\n')
 
     def generate_process_files(self, mcrl2_filename):
-        procs = set(self.processes)
+        procs = self.processes
         Console.info("Writing process files for processes: %s" % procs)
         files = {}
         for proc in procs:
