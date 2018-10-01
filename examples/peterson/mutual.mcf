@@ -1,1 +1,3 @@
+% Mutual exclusion between processes 1 and 2.
+
 [ true*. ENTER(1) . (!LEAVE(1))* . ENTER(2)] false

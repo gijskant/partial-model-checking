@@ -1,1 +1,3 @@
+% ENTER(1) and LEAVE(1) actions alternate.
+
 [ true*. ENTER(1) . (!LEAVE(1))* . ENTER(1)] false
