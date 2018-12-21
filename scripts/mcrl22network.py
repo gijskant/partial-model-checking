@@ -184,8 +184,6 @@ class Mcrl22Network:
         parse_procs = False
         if len(p) > 1:
             p[0] = p[0].strip()
-            if not p[1][-1:] == ')':
-                Console.error("Error: not in correct form: %s" % p[0])
             if p[0] in invalid_statements:
                 Console.error("Statement %s not allowed here." % p[0])
             elif p[0] == 'hide':
@@ -514,7 +512,7 @@ if __name__ == '__main__':
     if len(sys.argv) > 2:
         lin_options = sys.argv[2]
     else:
-        lin_options = "-f -lregular2"
+        lin_options = "-f -lregular2 -n"
 
     Console.title('mcrl22network')
 

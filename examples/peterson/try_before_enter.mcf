@@ -1,0 +1,3 @@
+% First TRY1 before ENTER1
+
+[ (!TRY1)* . ENTER1 ] false

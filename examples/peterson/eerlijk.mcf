@@ -1,4 +1,4 @@
 % When 1 and 2 both try to enter, there is an infinite path where
 % 1 infinitely often enters, but 2 never enters.
 
-[true*. TRY(1) . (!ENTER(1))* . TRY(2)] nu Z . <(!ENTER(2))* . ENTER(1)>Z
+[true*. TRY1 . (!ENTER1)* . TRY2] nu Z . <(!ENTER2)* . ENTER1>Z

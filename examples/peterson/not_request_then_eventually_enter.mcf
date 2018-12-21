@@ -6,4 +6,4 @@
 %
 % The original property does not hold, hence this negated property holds.
 
-mu Z.(<true>Z || <req1>(nu X. (<true>X && [enter1]false)) )
+mu Z.(<true>Z || <TRY1>(nu X. (<true>X && [ENTER1]false)) )

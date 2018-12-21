@@ -2,6 +2,9 @@
 
 Repository with scripts and instructions for a partial model checking technique for networks of LPSs.
 
+
+## Install an experiment version of [mCRL2] with support for partial model checking
+
 ```bash
 git clone https://github.com/gijskant/mCRL2.git
 cmake . -DMCRL2_ENABLE_GUI_TOOLS=OFF -DMCRL2_ENABLE_EXPERIMENTAL=ON -DCMAKE_INSTALL_PREFIX=${prefix}
@@ -132,6 +135,33 @@ formulaparelm -n ${network.net} ${formula.mcf} ${output-formula.mcf}
 network2lts ${network.net} -oaut ${lts.aut}
 network2lts ${network.net} -odot ${lts.dot}
 ```
+
+### PBES solving using [LTSmin]
+You can use the PBES language module for explicit generation tools using the following commands:
+
+```bash
+# Explicit instantiation to a parity game:
+pbes2lts-seq -c -rgs --write-state <spec>.pbes <lts>.dir
+# Explicit distributed instantiation to a parity game:
+pbes2lts-dist --workers=<workers> -rgs -c --write-state <spec>.pbes <lts>.dir
+# Translate from the .dir file format to the file format used by the PGSolver tool:
+ltsmin-convert --rdwr <lts>.dir <game>.pg
+```
+
+The explicit parity games can be solved by, e.g., the PGSolver tool or the pbespgsolve tool from the mCRL2 toolset.
+
+The symbolic tools (based on MDDs) for the PBES language module can be used as follows:
+```bash
+# Symbolic instantiation to a parity game:
+pbes2lts-sym -rgs --order=chain-prev --saturation=sat-like --save-sat-levels <spec>.pbes
+# Symbolic instantiation and solving:
+pbes2lts-sym --pg-solve -rgs --order=chain-prev --saturation=sat-like --save-sat-levels <spec>.pbes
+# Symbolic instantiation and save to a file:
+pbes2lts-sym --pg-write=<game>.spg [other options] <spec>.pbes
+# Symbolic solving:
+spgsolver <game>.spg
+```
+
 ### memtime
 We use memtime for measuring time and memory usage:
 ```bash
@@ -142,3 +172,6 @@ git submodule update --init
 ./configure --prefix=${prefix}
 make && make install
 ```
+
+[mCRL2]: https://mcrl2.org
+[LTSmin]: https://ltsmin.utwente.nl/

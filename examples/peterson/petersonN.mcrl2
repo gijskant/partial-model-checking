@@ -5,7 +5,7 @@ act TRY, ENTER, LEAVE: Pos;
     setLevelReq,setLevelRes,setLevel,getLevelReq,getLevelRes,getLevel: Pos#Nat;
     setLastReq,setLastRes,setLast,getLastReq,getLastRes,getLast: Pos#Pos;
     exists_otherReq,exists_otherRes,exists_other: Pos#Nat#Bool;
-    
+
 % 0: not set
 % 1..N: 
 proc

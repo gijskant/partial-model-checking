@@ -1,3 +1,3 @@
 % When process 1 tries to enter, always eventually process 1 will enter.
 
-[true*.TRY(1)] mu Z. <ENTER(1)>true || [true]Z
+[true*.TRY1] mu Z. <ENTER1>true || [true]Z
