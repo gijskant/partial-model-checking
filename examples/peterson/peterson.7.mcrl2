@@ -1,0 +1,211 @@
+
+% This is a model of Peterson's mutual exclusion algorithm for 7 processes.
+%
+
+map N: Pos;
+eqn N = 7;
+
+
+% Actions
+act setLevelReq, setLevelRes, setLevel, getLevelReq, getLevelRes, getLevel: Pos#Nat;
+    setLastReq, setLastRes, setLast, getLastReq, getLastRes, getLast: Pos#Pos;
+    exists_otherReq, exists_otherRes, exists_other: Pos#Nat#Bool;
+    TRY1, ENTER1, LEAVE1;
+    TRY2, ENTER2, LEAVE2;
+    TRY3, ENTER3, LEAVE3;
+    TRY4, ENTER4, LEAVE4;
+    TRY5, ENTER5, LEAVE5;
+    TRY6, ENTER6, LEAVE6;
+    TRY7, ENTER7, LEAVE7;
+
+% Levels process
+% 0: not set
+% 1..N:
+proc Levels(l1, l2, l3, l4, l5, l6, l7: Nat) =
+    sum l: Nat . (l <= N) -> setLevelRes(1, l) . Levels(l1 = l)
+    + getLevelRes(1, l1) . Levels()
+    + sum l: Nat . (l <= N) -> exists_otherRes(1, l, l2 >= l || l3 >= l || l4 >= l || l5 >= l || l6 >= l || l7 >= l). Levels()
+    + sum l: Nat . (l <= N) -> setLevelRes(2, l) . Levels(l2 = l)
+    + getLevelRes(2, l2) . Levels()
+    + sum l: Nat . (l <= N) -> exists_otherRes(2, l, l1 >= l || l3 >= l || l4 >= l || l5 >= l || l6 >= l || l7 >= l). Levels()
+    + sum l: Nat . (l <= N) -> setLevelRes(3, l) . Levels(l3 = l)
+    + getLevelRes(3, l3) . Levels()
+    + sum l: Nat . (l <= N) -> exists_otherRes(3, l, l1 >= l || l2 >= l || l4 >= l || l5 >= l || l6 >= l || l7 >= l). Levels()
+    + sum l: Nat . (l <= N) -> setLevelRes(4, l) . Levels(l4 = l)
+    + getLevelRes(4, l4) . Levels()
+    + sum l: Nat . (l <= N) -> exists_otherRes(4, l, l1 >= l || l2 >= l || l3 >= l || l5 >= l || l6 >= l || l7 >= l). Levels()
+    + sum l: Nat . (l <= N) -> setLevelRes(5, l) . Levels(l5 = l)
+    + getLevelRes(5, l5) . Levels()
+    + sum l: Nat . (l <= N) -> exists_otherRes(5, l, l1 >= l || l2 >= l || l3 >= l || l4 >= l || l6 >= l || l7 >= l). Levels()
+    + sum l: Nat . (l <= N) -> setLevelRes(6, l) . Levels(l6 = l)
+    + getLevelRes(6, l6) . Levels()
+    + sum l: Nat . (l <= N) -> exists_otherRes(6, l, l1 >= l || l2 >= l || l3 >= l || l4 >= l || l5 >= l || l7 >= l). Levels()
+    + sum l: Nat . (l <= N) -> setLevelRes(7, l) . Levels(l7 = l)
+    + getLevelRes(7, l7) . Levels()
+    + sum l: Nat . (l <= N) -> exists_otherRes(7, l, l1 >= l || l2 >= l || l3 >= l || l4 >= l || l5 >= l || l6 >= l). Levels()
+    ;
+
+% Last process
+proc Last(l1, l2, l3, l4, l5, l6, l7: Pos) =
+    sum l: Pos . (l <= N) -> setLastRes(1, l) . Last(l1 = l)
+    + getLastRes(1, l1) . Last()
+    + sum l: Pos . (l <= N) -> setLastRes(2, l) . Last(l2 = l)
+    + getLastRes(2, l2) . Last()
+    + sum l: Pos . (l <= N) -> setLastRes(3, l) . Last(l3 = l)
+    + getLastRes(3, l3) . Last()
+    + sum l: Pos . (l <= N) -> setLastRes(4, l) . Last(l4 = l)
+    + getLastRes(4, l4) . Last()
+    + sum l: Pos . (l <= N) -> setLastRes(5, l) . Last(l5 = l)
+    + getLastRes(5, l5) . Last()
+    + sum l: Pos . (l <= N) -> setLastRes(6, l) . Last(l6 = l)
+    + getLastRes(6, l6) . Last()
+    + sum l: Pos . (l <= N) -> setLastRes(7, l) . Last(l7 = l)
+    + getLastRes(7, l7) . Last()
+    ;
+
+% Process Peterson1
+proc ProcLoop1(l: Pos) =
+    (l == N + 1) -> (ENTER1 . LEAVE1 . setLevelReq(1, 0) . Peterson1)
+    <> setLevelReq(1, l) . (
+        (l == 1) -> TRY1 . setLastReq(l, 1)
+        <> setLastReq(l, 1)
+    ) . ProcWait1(l);
+
+proc ProcWait1(l: Pos) =
+    sum i0: Pos . (i0 <= N) -> getLastReq(l, i0) . (
+        (i0 != 1) -> ProcLoop1(l + 1)
+        <> (
+            exists_otherReq(1, l, false) . ProcLoop1(l + 1)
+            + exists_otherReq(1, l, true) . ProcWait1(l)
+        )
+    );
+
+proc Peterson1 = ProcLoop1(1);
+
+
+% Process Peterson2
+proc ProcLoop2(l: Pos) =
+    (l == N + 1) -> (ENTER2 . LEAVE2 . setLevelReq(2, 0) . Peterson2)
+    <> setLevelReq(2, l) . (
+        (l == 1) -> TRY2 . setLastReq(l, 2)
+        <> setLastReq(l, 2)
+    ) . ProcWait2(l);
+
+proc ProcWait2(l: Pos) =
+    sum i0: Pos . (i0 <= N) -> getLastReq(l, i0) . (
+        (i0 != 2) -> ProcLoop2(l + 1)
+        <> (
+            exists_otherReq(2, l, false) . ProcLoop2(l + 1)
+            + exists_otherReq(2, l, true) . ProcWait2(l)
+        )
+    );
+
+proc Peterson2 = ProcLoop2(1);
+
+
+% Process Peterson3
+proc ProcLoop3(l: Pos) =
+    (l == N + 1) -> (ENTER3 . LEAVE3 . setLevelReq(3, 0) . Peterson3)
+    <> setLevelReq(3, l) . (
+        (l == 1) -> TRY3 . setLastReq(l, 3)
+        <> setLastReq(l, 3)
+    ) . ProcWait3(l);
+
+proc ProcWait3(l: Pos) =
+    sum i0: Pos . (i0 <= N) -> getLastReq(l, i0) . (
+        (i0 != 3) -> ProcLoop3(l + 1)
+        <> (
+            exists_otherReq(3, l, false) . ProcLoop3(l + 1)
+            + exists_otherReq(3, l, true) . ProcWait3(l)
+        )
+    );
+
+proc Peterson3 = ProcLoop3(1);
+
+
+% Process Peterson4
+proc ProcLoop4(l: Pos) =
+    (l == N + 1) -> (ENTER4 . LEAVE4 . setLevelReq(4, 0) . Peterson4)
+    <> setLevelReq(4, l) . (
+        (l == 1) -> TRY4 . setLastReq(l, 4)
+        <> setLastReq(l, 4)
+    ) . ProcWait4(l);
+
+proc ProcWait4(l: Pos) =
+    sum i0: Pos . (i0 <= N) -> getLastReq(l, i0) . (
+        (i0 != 4) -> ProcLoop4(l + 1)
+        <> (
+            exists_otherReq(4, l, false) . ProcLoop4(l + 1)
+            + exists_otherReq(4, l, true) . ProcWait4(l)
+        )
+    );
+
+proc Peterson4 = ProcLoop4(1);
+
+
+% Process Peterson5
+proc ProcLoop5(l: Pos) =
+    (l == N + 1) -> (ENTER5 . LEAVE5 . setLevelReq(5, 0) . Peterson5)
+    <> setLevelReq(5, l) . (
+        (l == 1) -> TRY5 . setLastReq(l, 5)
+        <> setLastReq(l, 5)
+    ) . ProcWait5(l);
+
+proc ProcWait5(l: Pos) =
+    sum i0: Pos . (i0 <= N) -> getLastReq(l, i0) . (
+        (i0 != 5) -> ProcLoop5(l + 1)
+        <> (
+            exists_otherReq(5, l, false) . ProcLoop5(l + 1)
+            + exists_otherReq(5, l, true) . ProcWait5(l)
+        )
+    );
+
+proc Peterson5 = ProcLoop5(1);
+
+
+% Process Peterson6
+proc ProcLoop6(l: Pos) =
+    (l == N + 1) -> (ENTER6 . LEAVE6 . setLevelReq(6, 0) . Peterson6)
+    <> setLevelReq(6, l) . (
+        (l == 1) -> TRY6 . setLastReq(l, 6)
+        <> setLastReq(l, 6)
+    ) . ProcWait6(l);
+
+proc ProcWait6(l: Pos) =
+    sum i0: Pos . (i0 <= N) -> getLastReq(l, i0) . (
+        (i0 != 6) -> ProcLoop6(l + 1)
+        <> (
+            exists_otherReq(6, l, false) . ProcLoop6(l + 1)
+            + exists_otherReq(6, l, true) . ProcWait6(l)
+        )
+    );
+
+proc Peterson6 = ProcLoop6(1);
+
+
+% Process Peterson7
+proc ProcLoop7(l: Pos) =
+    (l == N + 1) -> (ENTER7 . LEAVE7 . setLevelReq(7, 0) . Peterson7)
+    <> setLevelReq(7, l) . (
+        (l == 1) -> TRY7 . setLastReq(l, 7)
+        <> setLastReq(l, 7)
+    ) . ProcWait7(l);
+
+proc ProcWait7(l: Pos) =
+    sum i0: Pos . (i0 <= N) -> getLastReq(l, i0) . (
+        (i0 != 7) -> ProcLoop7(l + 1)
+        <> (
+            exists_otherReq(7, l, false) . ProcLoop7(l + 1)
+            + exists_otherReq(7, l, true) . ProcWait7(l)
+        )
+    );
+
+proc Peterson7 = ProcLoop7(1);
+
+
+init hide( {setLevel, setLast, exists_other, getLast, getLevel},
+         allow({setLevel, setLast, exists_other, getLast, getLevel, TRY1, ENTER1, LEAVE1, TRY2, ENTER2, LEAVE2, TRY3, ENTER3, LEAVE3, TRY4, ENTER4, LEAVE4, TRY5, ENTER5, LEAVE5, TRY6, ENTER6, LEAVE6, TRY7, ENTER7, LEAVE7},
+             comm({setLevelReq|setLevelRes -> setLevel, getLevelReq|getLevelRes -> getLevel, setLastReq|setLastRes -> setLast, getLastReq|getLastRes -> getLast, exists_otherReq|exists_otherRes -> exists_other},
+                 Levels(0, 0, 0, 0, 0, 0, 0) || Last(1, 1, 1, 1, 1, 1, 1) || Peterson1 || Peterson2 || Peterson3 || Peterson4 || Peterson5 || Peterson6 || Peterson7
+             )));
+
