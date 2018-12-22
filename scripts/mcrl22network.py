@@ -495,11 +495,14 @@ class Mcrl22Network:
         os.system(self.bindir + 'txt2lps delta.txt delta.lps')
 
 
+DEFAULT_LINEARISATION_OPTIONS = "-f -lregular2 -n"
+
+
 def usage():
     Console.info("Usage: %s <file.mcrl2> [linearisation options]" % os.path.basename(sys.argv[0]))
     Console.info("")
-    Console.info("Generates a network file <file.net> and required .mcrl2 and .lps filed.")
-    Console.info("Default linearisation options: -f -lregular2")
+    Console.info("Generates a network file <file.net> and required .mcrl2 and .lps files.")
+    Console.info("Default linearisation options: " + DEFAULT_LINEARISATION_OPTIONS)
 
 
 if __name__ == '__main__':
@@ -512,7 +515,7 @@ if __name__ == '__main__':
     if len(sys.argv) > 2:
         lin_options = sys.argv[2]
     else:
-        lin_options = "-f -lregular2 -n"
+        lin_options = DEFAULT_LINEARISATION_OPTIONS
 
     Console.title('mcrl22network')
 

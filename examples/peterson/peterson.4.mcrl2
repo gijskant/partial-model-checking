@@ -46,13 +46,6 @@ proc Last(l1, l2, l3, l4: Pos) =
     ;
 
 % Process Peterson1
-proc ProcLoop1(l: Pos) =
-    (l == N + 1) -> (ENTER1 . LEAVE1 . setLevelReq(1, 0) . Peterson1)
-    <> setLevelReq(1, l) . (
-        (l == 1) -> TRY1 . setLastReq(l, 1)
-        <> setLastReq(l, 1)
-    ) . ProcWait1(l);
-
 proc ProcWait1(l: Pos) =
     sum i0: Pos . (i0 <= N) -> getLastReq(l, i0) . (
         (i0 != 1) -> ProcLoop1(l + 1)
@@ -62,17 +55,17 @@ proc ProcWait1(l: Pos) =
         )
     );
 
+proc ProcLoop1(l: Pos) =
+    (l == N + 1) -> (ENTER1 . LEAVE1 . setLevelReq(1, 0) . Peterson1)
+    <> setLevelReq(1, l) . (
+        (l == 1) -> TRY1 . setLastReq(l, 1)
+        <> setLastReq(l, 1)
+    ) . ProcWait1(l);
+
 proc Peterson1 = ProcLoop1(1);
 
 
 % Process Peterson2
-proc ProcLoop2(l: Pos) =
-    (l == N + 1) -> (ENTER2 . LEAVE2 . setLevelReq(2, 0) . Peterson2)
-    <> setLevelReq(2, l) . (
-        (l == 1) -> TRY2 . setLastReq(l, 2)
-        <> setLastReq(l, 2)
-    ) . ProcWait2(l);
-
 proc ProcWait2(l: Pos) =
     sum i0: Pos . (i0 <= N) -> getLastReq(l, i0) . (
         (i0 != 2) -> ProcLoop2(l + 1)
@@ -82,17 +75,17 @@ proc ProcWait2(l: Pos) =
         )
     );
 
+proc ProcLoop2(l: Pos) =
+    (l == N + 1) -> (ENTER2 . LEAVE2 . setLevelReq(2, 0) . Peterson2)
+    <> setLevelReq(2, l) . (
+        (l == 1) -> TRY2 . setLastReq(l, 2)
+        <> setLastReq(l, 2)
+    ) . ProcWait2(l);
+
 proc Peterson2 = ProcLoop2(1);
 
 
 % Process Peterson3
-proc ProcLoop3(l: Pos) =
-    (l == N + 1) -> (ENTER3 . LEAVE3 . setLevelReq(3, 0) . Peterson3)
-    <> setLevelReq(3, l) . (
-        (l == 1) -> TRY3 . setLastReq(l, 3)
-        <> setLastReq(l, 3)
-    ) . ProcWait3(l);
-
 proc ProcWait3(l: Pos) =
     sum i0: Pos . (i0 <= N) -> getLastReq(l, i0) . (
         (i0 != 3) -> ProcLoop3(l + 1)
@@ -102,17 +95,17 @@ proc ProcWait3(l: Pos) =
         )
     );
 
+proc ProcLoop3(l: Pos) =
+    (l == N + 1) -> (ENTER3 . LEAVE3 . setLevelReq(3, 0) . Peterson3)
+    <> setLevelReq(3, l) . (
+        (l == 1) -> TRY3 . setLastReq(l, 3)
+        <> setLastReq(l, 3)
+    ) . ProcWait3(l);
+
 proc Peterson3 = ProcLoop3(1);
 
 
 % Process Peterson4
-proc ProcLoop4(l: Pos) =
-    (l == N + 1) -> (ENTER4 . LEAVE4 . setLevelReq(4, 0) . Peterson4)
-    <> setLevelReq(4, l) . (
-        (l == 1) -> TRY4 . setLastReq(l, 4)
-        <> setLastReq(l, 4)
-    ) . ProcWait4(l);
-
 proc ProcWait4(l: Pos) =
     sum i0: Pos . (i0 <= N) -> getLastReq(l, i0) . (
         (i0 != 4) -> ProcLoop4(l + 1)
@@ -121,6 +114,13 @@ proc ProcWait4(l: Pos) =
             + exists_otherReq(4, l, true) . ProcWait4(l)
         )
     );
+
+proc ProcLoop4(l: Pos) =
+    (l == N + 1) -> (ENTER4 . LEAVE4 . setLevelReq(4, 0) . Peterson4)
+    <> setLevelReq(4, l) . (
+        (l == 1) -> TRY4 . setLastReq(l, 4)
+        <> setLastReq(l, 4)
+    ) . ProcWait4(l);
 
 proc Peterson4 = ProcLoop4(1);
 

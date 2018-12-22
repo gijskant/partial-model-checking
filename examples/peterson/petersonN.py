@@ -97,13 +97,6 @@ proc Last({levels}: Pos) =
 
     PetersonProcessTemplate = '''
 % Process Peterson{i}
-proc ProcLoop{i}(l: Pos) =
-    (l == N + 1) -> (ENTER{i} . LEAVE{i} . setLevelReq({i}, 0) . Peterson{i})
-    <> setLevelReq({i}, l) . (
-        (l == 1) -> TRY{i} . setLastReq(l, {i})
-        <> setLastReq(l, {i})
-    ) . ProcWait{i}(l);
-
 proc ProcWait{i}(l: Pos) =
     sum i0: Pos . (i0 <= N) -> getLastReq(l, i0) . (
         (i0 != {i}) -> ProcLoop{i}(l + 1)
@@ -112,6 +105,13 @@ proc ProcWait{i}(l: Pos) =
             + exists_otherReq({i}, l, true) . ProcWait{i}(l)
         )
     );
+
+proc ProcLoop{i}(l: Pos) =
+    (l == N + 1) -> (ENTER{i} . LEAVE{i} . setLevelReq({i}, 0) . Peterson{i})
+    <> setLevelReq({i}, l) . (
+        (l == 1) -> TRY{i} . setLastReq(l, {i})
+        <> setLastReq(l, {i})
+    ) . ProcWait{i}(l);
 
 proc Peterson{i} = ProcLoop{i}(1);
 '''
