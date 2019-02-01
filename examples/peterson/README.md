@@ -8,8 +8,11 @@ from the collection of model checking problems, with a few modifications.
 
 2. The version for _N_ parties in two variants, based on the 
    [description on Wikipedia](https://en.wikipedia.org/wiki/Peterson's_algorithm):
-  - [petersonN.mcrl2](petersonN.mcrl2), a generic specification instantiated for 3 parties;
-  - the `peterson.N.mcrl2` files, generated using the [petersonN.py](petersonN.py) script.
+    - [petersonN.mcrl2](petersonN.mcrl2), a generic specification instantiated for 3 parties;
+    - the `peterson.N.mcrl2` files, generated using the [petersonN.py](petersonN.py) script.
+
+This algorithm is described in detail in [Herlihy & Shavit (2008): The Art of Multiprocessor Programming] and
+[Raynal (2013): Concurrent Programming: Algorithms, Principles, and Foundations].
 
 ## Version for _N_ parties
 
@@ -73,3 +76,6 @@ cd data
 wget -O peterson.mcrl2.orig https://raw.githubusercontent.com/jkeiren/paritygame-generator/master/cases/modelchecking/specs/mcrl2/peterson.mcrl2
 patch peterson.mcrl2.orig -i ../peterson.mcrl2-pmc.patch -o peterson.mcrl2
 ```
+
+[Herlihy & Shavit (2008): The Art of Multiprocessor Programming]: https://books.google.nl/books?id=vfvPrSz7R7QC
+[Raynal (2013): Concurrent Programming: Algorithms, Principles, and Foundations]: https://doi.org/10.1007/978-3-642-32027-9
